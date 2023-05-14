@@ -7,6 +7,14 @@ class NewsArticleListViewModel extends ChangeNotifier{
 
   List<NewsArticleViewModel> articles = <NewsArticleViewModel>[];
 
+
+  Future<void> populateNewsByKeyword() async{
+    List<NewsArticle> newsArticle = await WebService().fetchHeadlinesByKeyword('bitcoin');
+
+    articles = newsArticle.map((article) => NewsArticleViewModel(newsArticle: article)).toList();
+    notifyListeners();
+  }
+
    Future<void > populateTopHeadlines() async {
 
     List<NewsArticle> newsArticle = await WebService().fetchTopHeadlines();

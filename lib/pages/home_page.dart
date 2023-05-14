@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/viewmodels/news_article_list_view_model.dart';
+import 'package:news_app/widgets/news_list.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,9 +13,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  final _controller = TextEditingController();
+
   @override
   void initState() {
-    Provider.of<NewsArticleListViewModel>(context, listen: false).populateTopHeadlines();
+    Provider.of<NewsArticleListViewModel>(context, listen: false).populateNewsByKeyword();
     super.initState();
   }
   @override
@@ -27,22 +30,28 @@ class _HomePageState extends State<HomePage> {
         title: const Text('News App'),
         centerTitle: true,
       ),
-      body: ListView.separated(
-        
-        itemCount: vm.articles.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 20,), 
-        itemBuilder: ((context, index) {
-          var article = vm.articles[index];
-          return ListTile(
-            leading: Container(
-              height: 100,
-              width: 100,
-              child: article.urlToImage != null ? Image.network(article.urlToImage!): Image.asset('images/news.png'),
+      body: Column(
+        children: [
+          TextField(
+            controller: _controller,
+            onSubmitted: (value){},
+            decoration: InputDecoration(
+              labelText: 'Enter search term',
+              icon: const Padding(
+                padding: EdgeInsets.all(10),
+                child: Icon(Icons.search),
+              ),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear), 
+              onPressed: (){
+                _controller.clear();
+              },)
             ),
-            title: Text(article.title!),
-            subtitle: article.urlToImage != null ? Text(article.description!): const Text('Failed to load data'),
-          );
-        }),)
+          ),
+          Expanded(child: NewsList(articles: vm.articles))
+          
+        ],
+      )
     );
   }
 }
